@@ -39,3 +39,23 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/app/generated/prisma
+
+# Uploaded files (keep directory, ignore contents)
+/public/uploads/documents/*
+!/public/uploads/documents/.gitkeep
+/public/uploads/*
+!/public/uploads/documents
+!/public/uploads/.gitkeep
+
+# IDE internal folders
+.agents/
+.claude/
+.windsurf/
+skills-lock.json
+AGENTS.md
+CLAUDE.md
+prisma/dist/
+tsconfig.seed.json
+prisma/run-seed.mjs

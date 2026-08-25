@@ -1,36 +1,138 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SWATEK Platform
 
-## Getting Started
+Smart Waves Technologies — full-stack web platform for Industry 4.0, AI, IoT, clean energy, smart agriculture, and circular economy solutions.
 
-First, run the development server:
+## Stack
 
+- **Frontend & API**: Next.js 14 (App Router) + TypeScript + Tailwind CSS
+- **Animation**: Framer Motion + GSAP ScrollTrigger
+- **Database**: PostgreSQL + Prisma ORM
+- **Auth**: JWT with role-based access control (admin / editor / viewer)
+- **Validation**: Zod (client + server)
+- **Containerization**: Docker + Docker Compose
+
+---
+
+## Quick Start (Local Dev)
+
+### 1. Prerequisites
+- Node.js 20+
+- Docker Desktop (for PostgreSQL)
+
+### 2. Install dependencies
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Start PostgreSQL
+```bash
+docker-compose up postgres -d
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 4. Configure environment
+```bash
+cp .env.example .env
+# .env is pre-configured for the local Docker DB — no changes needed for dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 5. Run migrations + seed
+```bash
+npx prisma migrate dev --name init
+npm run db:seed
+```
 
-## Learn More
+### 6. Start dev server
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+App runs at **http://localhost:3000**
+Admin panel at **http://localhost:3000/admin/login**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Default credentials:
+- admin@swatek.tech / Admin@123
+- editor@swatek.tech / Editor@123
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Docker (Full Stack)
+```bash
+docker-compose up --build
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## API Endpoints
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | /api/auth/login | Public | Get JWT token |
+| GET | /api/auth/me | Bearer | Current user |
+| GET | /api/technologies | Public | List technologies (filter: domain, tag, featured) |
+| POST | /api/technologies | editor+ | Create technology |
+| GET | /api/technologies/[id] | Public | Get by id or slug |
+| PATCH | /api/technologies/[id] | editor+ | Update |
+| DELETE | /api/technologies/[id] | admin | Delete |
+| GET | /api/domains | Public | List domains with tech count |
+| GET | /api/solutions | Public | List solutions |
+| POST | /api/solutions | editor+ | Create solution |
+| GET | /api/solutions/[id] | Public | Get solution |
+| GET | /api/case-studies | Public | List (filter: sector, geography, tag) |
+| POST | /api/case-studies | editor+ | Create |
+| GET | /api/knowledge | Public | Document library (filter: category, language, tag) |
+| POST | /api/knowledge | editor+ | Add document |
+| GET | /api/partners | Public | List partners |
+| POST | /api/partners | editor+ | Create partner |
+| GET | /api/metrics | Public | Global impact metrics |
+| POST | /api/inquiries | Public | Submit inquiry (contact form) |
+| GET | /api/inquiries | auth | List inquiries (admin/editor) |
+| GET | /api/inquiries/[id] | auth | Get inquiry detail |
+| PATCH | /api/inquiries/[id] | editor+ | Update status / assignment |
+| POST | /api/inquiries/[id]/notes | auth | Add internal note |
+| GET | /api/admin/analytics | auth | Dashboard stats |
+| GET | /api/admin/users | admin | List users |
+| POST | /api/admin/users | admin | Create user |
+| POST | /api/upload | editor+ | Upload document file |
+
+---
+
+## Project Structure
+
+```
+swatek-platform/
+├── app/
+│   ├── api/               # Route Handlers (REST API)
+│   ├── admin/             # Admin dashboard
+│   ├── technologies/      # Public tech catalog
+│   ├── solutions/         # Solutions pages
+│   ├── case-studies/      # Case studies
+│   ├── knowledge/         # Document library
+│   ├── partners/          # Partners
+│   ├── contact/           # Contact + inquiry form
+│   └── page.tsx           # Homepage (cinematic)
+├── components/
+│   ├── cinematic/         # Reveal, AnimatedCounter, ExpandableCard, HeroSection
+│   ├── shared/            # Navbar, Footer
+│   ├── ui/                # Base UI components
+│   └── admin/             # Admin-specific components
+├── lib/
+│   ├── prisma.ts          # Prisma client singleton
+│   ├── auth.ts            # JWT utilities
+│   ├── utils.ts           # cn() helper
+│   └── validation/        # Zod schemas
+├── prisma/
+│   ├── schema.prisma      # Full DB schema
+│   └── seed.ts            # Realistic seed data
+├── public/uploads/        # File uploads (swap to S3 in production)
+├── .env.example
+├── docker-compose.yml
+└── Dockerfile
+```
+
+## Roles
+
+| Role | Permissions |
+|------|------------|
+| admin | Full access — CRUD everything, manage users, delete records |
+| editor | Create/edit content and manage inquiries — no user management |
+| viewer | Read-only access to inquiries assigned to them |

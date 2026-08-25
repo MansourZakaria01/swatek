@@ -1,0 +1,271 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum Role {
+  admin
+  editor
+  viewer
+}
+
+enum TechnologyDomain {
+  AI
+  INDUSTRY_40
+  CIRCULAR_ECONOMY
+  ENERGY_HYDROGEN
+  AGRICULTURE_40
+  SMART_INFRASTRUCTURE
+}
+
+enum InquiryType {
+  technology_partnership
+  project_development
+  investment
+  government_relation
+  technical_consulting
+  other
+}
+
+enum InquiryStatus {
+  new
+  in_review
+  assigned
+  in_progress
+  closed
+}
+
+enum PartnerType {
+  technology
+  academic
+  financial
+  government
+  industry
+}
+
+enum DocumentCategory {
+  whitepaper
+  case_study
+  technical_spec
+  brochure
+  report
+}
+
+// ─── Users & Auth ─────────────────────────────────────────────────────────────
+
+model User {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         Role      @default(viewer)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  assignedInquiries Inquiry[]     @relation("AssignedTo")
+  inquiryNotes      InquiryNote[]
+}
+
+// ─── Technology Domain ────────────────────────────────────────────────────────
+
+model TechnologyDomainRecord {
+  id          String           @id @default(cuid())
+  slug        String           @unique
+  domain      TechnologyDomain @unique
+  nameEn      String
+  nameFr      String
+  nameAr      String
+  descEn      String           @db.Text
+  descFr      String           @db.Text
+  descAr      String           @db.Text
+  icon        String?
+  heroImage   String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  technologies Technology[]
+}
+
+// ─── Technology ───────────────────────────────────────────────────────────────
+
+model Technology {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  nameEn          String
+  nameFr          String
+  nameAr          String
+  descEn          String   @db.Text
+  descFr          String   @db.Text
+  descAr          String   @db.Text
+  benefitsEn      String[] 
+  benefitsFr      String[]
+  benefitsAr      String[]
+  energySavingsPct Float?
+  carbonReductionPct Float?
+  roiPeriodMonths Int?
+  images          String[]
+  tags            String[]
+  featured        Boolean  @default(false)
+  published       Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  domainId   String
+  domain     TechnologyDomainRecord @relation(fields: [domainId], references: [id])
+
+  solutions  SolutionTechnology[]
+  metrics    ImpactMetric[]
+}
+
+// ─── Solution ─────────────────────────────────────────────────────────────────
+
+model Solution {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  titleEn     String
+  titleFr     String
+  titleAr     String
+  descEn      String   @db.Text
+  descFr      String   @db.Text
+  descAr      String   @db.Text
+  sector      String
+  coverImage  String?
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  technologies SolutionTechnology[]
+  caseStudies  CaseStudy[]
+}
+
+model SolutionTechnology {
+  solutionId   String
+  technologyId String
+  solution     Solution   @relation(fields: [solutionId], references: [id])
+  technology   Technology @relation(fields: [technologyId], references: [id])
+
+  @@id([solutionId, technologyId])
+}
+
+// ─── Case Study ───────────────────────────────────────────────────────────────
+
+model CaseStudy {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  titleEn         String
+  titleFr         String
+  titleAr         String
+  descEn          String   @db.Text
+  descFr          String   @db.Text
+  descAr          String   @db.Text
+  sector          String
+  geography       String
+  tags            String[]
+  coverImage      String?
+  published       Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Metrics
+  capacityMW           Float?
+  productivityGainPct  Float?
+  carbonReductionTons  Float?
+  roiPct               Float?
+  opCostReductionPct   Float?
+
+  solutionId  String?
+  solution    Solution? @relation(fields: [solutionId], references: [id])
+  metrics     ImpactMetric[]
+}
+
+// ─── Knowledge Document ───────────────────────────────────────────────────────
+
+model KnowledgeDocument {
+  id          String           @id @default(cuid())
+  titleEn     String
+  titleFr     String
+  titleAr     String
+  descEn      String           @db.Text
+  descFr      String           @db.Text
+  descAr      String           @db.Text
+  category    DocumentCategory
+  language    String           // en | fr | ar
+  fileType    String           // pdf | docx | xlsx
+  pageCount   Int?
+  fileUrl     String
+  tags        String[]
+  published   Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+// ─── Partner ─────────────────────────────────────────────────────────────────
+
+model Partner {
+  id          String      @id @default(cuid())
+  name        String
+  descEn      String      @db.Text
+  descFr      String      @db.Text
+  descAr      String      @db.Text
+  website     String?
+  logo        String?
+  type        PartnerType
+  featured    Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+// ─── Impact Metric ────────────────────────────────────────────────────────────
+
+model ImpactMetric {
+  id                String   @id @default(cuid())
+  labelEn           String
+  labelFr           String
+  labelAr           String
+  value             Float
+  unit              String
+  methodologyNote   String?  @db.Text
+  dateMeasured      DateTime?
+  createdAt         DateTime @default(now())
+
+  technologyId  String?
+  technology    Technology? @relation(fields: [technologyId], references: [id])
+  caseStudyId   String?
+  caseStudy     CaseStudy?  @relation(fields: [caseStudyId], references: [id])
+}
+
+// ─── Inquiry (Lead) ───────────────────────────────────────────────────────────
+
+model Inquiry {
+  id           String        @id @default(cuid())
+  fullName     String
+  organization String?
+  email        String
+  phone        String?
+  inquiryType  InquiryType
+  message      String        @db.Text
+  status       InquiryStatus @default(new)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  assignedToId String?
+  assignedTo   User?         @relation("AssignedTo", fields: [assignedToId], references: [id])
+
+  notes        InquiryNote[]
+}
+
+model InquiryNote {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  inquiryId String
+  inquiry   Inquiry @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User    @relation(fields: [authorId], references: [id])
+}

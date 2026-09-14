@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
+import { AdminTableSkeleton } from '@/components/admin/AdminTableSkeleton'
 
 const STATUSES = ['all', 'new', 'in_review', 'assigned', 'in_progress', 'closed']
 const STATUS_COLORS: Record<string, string> = {
@@ -25,6 +27,7 @@ export default function InquiriesPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    setLoading(true)
     const token = localStorage.getItem('swatek_token')
     const params = statusFilter !== 'all' ? `?status=${statusFilter}` : ''
     fetch(`/api/inquiries${params}`, { headers: { Authorization: `Bearer ${token}` } })
@@ -34,11 +37,12 @@ export default function InquiriesPage() {
 
   return (
     <div className="p-8 max-w-6xl">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold">Inquiries / Leads</h1>
-      </div>
+      <AdminPageHeader
+        kicker="CRM"
+        title="Inquiries / Leads"
+        description="Track and triage inbound partnership and consulting requests."
+      />
 
-      {/* Status filter */}
       <div className="flex flex-wrap gap-2 mb-6">
         {STATUSES.map((s) => (
           <button
@@ -52,7 +56,7 @@ export default function InquiriesPage() {
       </div>
 
       {loading ? (
-        <p className="text-[--text-muted]">Loading...</p>
+        <AdminTableSkeleton />
       ) : inquiries.length === 0 ? (
         <p className="text-[--text-muted] py-12 text-center">No inquiries found.</p>
       ) : (

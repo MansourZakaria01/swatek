@@ -8,6 +8,7 @@ import {
   MessageSquare, LogOut, Zap, ChevronRight
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { PageTransition } from '@/components/cinematic/PageTransition'
 
 const navItems = [
   { href: '/admin/dashboard',    icon: LayoutDashboard, label: 'Dashboard' },
@@ -38,13 +39,17 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
   }
 
   return (
-    <div className="flex min-h-screen bg-[--background]">
+    <div className="admin-atmosphere relative flex min-h-screen bg-[--background]">
+      <div className="film-grain" aria-hidden />
+      <div className="vignette" aria-hidden />
+
       {/* Sidebar */}
-      <aside className="w-60 flex-shrink-0 bg-[--surface] border-r border-[--border] flex flex-col">
+      <aside className="relative z-20 w-60 flex-shrink-0 bg-[--surface]/90 backdrop-blur-md border-r border-[--border] flex flex-col">
+        <div className="absolute inset-y-0 left-0 w-px bg-gradient-to-b from-[--accent]/60 via-[--accent-warm]/30 to-transparent" aria-hidden />
         <div className="flex items-center gap-2 px-5 py-5 border-b border-[--border]">
           <Zap size={20} className="text-[--accent]" />
-          <span className="font-bold text-gradient">SWATEK</span>
-          <span className="text-xs text-[--text-muted] ml-auto">Admin</span>
+          <span className="font-display font-bold text-gradient">SWATEK</span>
+          <span className="text-xs text-[--text-muted] ml-auto tracking-widest uppercase">Admin</span>
         </div>
 
         <nav className="flex-1 py-4 overflow-y-auto" aria-label="Admin navigation">
@@ -57,12 +62,15 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
                   <Link
                     href={item.href}
                     className={cn(
-                      'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors',
+                      'relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors',
                       active
-                        ? 'bg-[--accent-glow] text-[--accent] font-medium'
+                        ? 'bg-[--accent-glow] text-[--accent] font-medium shadow-[0_0_20px_var(--accent-glow)]'
                         : 'text-[--text-secondary] hover:bg-[--surface-2] hover:text-[--foreground]'
                     )}
                   >
+                    {active && (
+                      <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-0.5 rounded-full bg-[--accent]" aria-hidden />
+                    )}
                     <Icon size={16} />
                     {item.label}
                     {active && <ChevronRight size={12} className="ml-auto" />}
@@ -91,8 +99,8 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
       </aside>
 
       {/* Main */}
-      <main className="flex-1 overflow-auto bg-[--background]">
-        {children}
+      <main className="relative z-10 flex-1 overflow-auto bg-[--background]">
+        <PageTransition>{children}</PageTransition>
       </main>
     </div>
   )

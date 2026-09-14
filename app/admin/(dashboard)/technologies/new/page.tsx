@@ -5,10 +5,11 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
 
 interface Domain { id: string; nameEn: string }
 
-const inputClass = 'w-full bg-[--surface-2] border border-[--border] rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[--accent] transition-colors'
+const inputClass = 'cine-input'
 
 export default function NewTechnologyPage() {
   const router = useRouter()
@@ -63,7 +64,11 @@ export default function NewTechnologyPage() {
       <Link href="/admin/technologies" className="inline-flex items-center gap-1 text-sm text-[--text-muted] hover:text-[--accent] transition-colors mb-6">
         <ArrowLeft size={14} /> Back
       </Link>
-      <h1 className="text-2xl font-bold mb-8">Add Technology</h1>
+      <AdminPageHeader
+        kicker="Catalog"
+        title="Add Technology"
+        description="Create a new portfolio entry with multilingual content and impact metrics."
+      />
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-2 gap-4">
@@ -132,7 +137,7 @@ export default function NewTechnologyPage() {
         {error && <p className="text-sm text-[--danger]">{error}</p>}
 
         <button type="submit" disabled={saving}
-          className="w-full py-3 rounded-lg bg-[--accent] text-[--background] font-semibold hover:bg-[--accent-dim] transition-colors disabled:opacity-50">
+          className="btn-cinematic btn-primary w-full py-3 rounded-full font-semibold disabled:opacity-50">
           {saving ? 'Saving...' : 'Save Technology'}
         </button>
       </form>

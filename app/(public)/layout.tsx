@@ -1,10 +1,12 @@
 import { Navbar } from '@/components/shared/Navbar'
 import { Footer } from '@/components/shared/Footer'
 import { PageTransition } from '@/components/cinematic/PageTransition'
+import { SiteAtmosphere } from '@/components/cinematic/SiteAtmosphere'
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
+      <SiteAtmosphere />
       <Navbar />
       <main id="main-content">
         <PageTransition>{children}</PageTransition>

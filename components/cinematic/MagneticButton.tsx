@@ -1,26 +1,31 @@
 'use client'
 
-import { useRef, ReactNode, MouseEvent } from 'react'
+import { useRef, ReactNode, MouseEvent, useEffect, useState } from 'react'
 import { motion, useMotionValue, useSpring, useReducedMotion } from 'framer-motion'
 
 interface MagneticButtonProps {
   children: ReactNode
   className?: string
   strength?: number
-  as?: 'button' | 'div' | 'span'
 }
 
-export function MagneticButton({ children, className, strength = 0.35, as: Tag = 'div' }: MagneticButtonProps) {
+export function MagneticButton({ children, className, strength = 0.35 }: MagneticButtonProps) {
   const ref = useRef<HTMLDivElement>(null)
   const reducedMotion = useReducedMotion()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => { setMounted(true) }, [])
 
   const x = useMotionValue(0)
   const y = useMotionValue(0)
   const springX = useSpring(x, { stiffness: 200, damping: 18 })
   const springY = useSpring(y, { stiffness: 200, damping: 18 })
 
+  // Keep SSR and first client paint identical — enable magnetism only after mount
+  const active = mounted && !reducedMotion
+
   const handleMove = (e: MouseEvent) => {
-    if (reducedMotion || !ref.current) return
+    if (!active || !ref.current) return
     const rect = ref.current.getBoundingClientRect()
     const cx = rect.left + rect.width / 2
     const cy = rect.top + rect.height / 2
@@ -33,17 +38,17 @@ export function MagneticButton({ children, className, strength = 0.35, as: Tag =
     y.set(0)
   }
 
-  if (reducedMotion) {
-    return <Tag className={className}>{children}</Tag>
-  }
-
   return (
     <motion.div
       ref={ref}
       className={className}
-      style={{ x: springX, y: springY, display: 'inline-block' }}
-      onMouseMove={handleMove}
-      onMouseLeave={handleLeave}
+      style={{
+        display: 'inline-block',
+        x: active ? springX : 0,
+        y: active ? springY : 0,
+      }}
+      onMouseMove={active ? handleMove : undefined}
+      onMouseLeave={active ? handleLeave : undefined}
     >
       {children}
     </motion.div>

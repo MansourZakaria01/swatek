@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Trash2 } from 'lucide-react'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
+import { AdminTableSkeleton } from '@/components/admin/AdminTableSkeleton'
 
 interface Solution { id: string; slug: string; titleEn: string; sector: string; _count: { caseStudies: number } }
 
@@ -28,8 +30,12 @@ export default function AdminSolutionsPage() {
 
   return (
     <div className="p-8 max-w-5xl">
-      <h1 className="text-2xl font-bold mb-8">Solutions</h1>
-      {loading ? <p className="text-[--text-muted]">Loading...</p> : items.length === 0 ? (
+      <AdminPageHeader
+        kicker="Packages"
+        title="Solutions"
+        description="Business packages combining technologies for industry challenges."
+      />
+      {loading ? <AdminTableSkeleton /> : items.length === 0 ? (
         <p className="text-[--text-muted] py-12 text-center">No solutions yet.</p>
       ) : (
         <div className="glass rounded-xl border border-[--border] overflow-hidden">

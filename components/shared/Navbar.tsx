@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import { Menu, X, Zap } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { MagneticButton } from '@/components/cinematic/MagneticButton'
 
 const navLinks = [
   { href: '/technologies', label: 'Technologies' },
@@ -26,7 +27,7 @@ export function Navbar() {
   useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 20)
+    const handler = () => setScrolled(window.scrollY > 16)
     window.addEventListener('scroll', handler, { passive: true })
     return () => window.removeEventListener('scroll', handler)
   }, [])
@@ -34,37 +35,31 @@ export function Navbar() {
   return (
     <motion.header
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-        scrolled ? 'glass border-b border-[--border] py-3' : 'py-5'
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
+        scrolled ? 'glass border-b border-[--border] py-3' : 'py-5 bg-gradient-to-b from-black/50 to-transparent'
       )}
-      initial={reducedMotion ? false : { y: -80, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      initial={false}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
     >
       <nav className="max-w-7xl mx-auto px-6 flex items-center justify-between" aria-label="Main navigation">
-
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 font-bold text-xl group">
-          <motion.span
-            className="text-[--accent]"
-            whileHover={reducedMotion ? {} : { rotate: 20, scale: 1.15 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 12 }}
-          >
-            <Zap size={22} strokeWidth={2.5} />
-          </motion.span>
-          <span className="text-gradient">SWATEK</span>
+        <Link href="/" className="flex items-center gap-3 group">
+          <span className="relative flex h-8 w-8 items-center justify-center">
+            <span className="absolute inset-0 rounded-sm border border-[--accent]/50 rotate-45 group-hover:rotate-90 transition-transform duration-500" />
+            <span className="h-1.5 w-1.5 rounded-full bg-[--accent] shadow-[0_0_12px_var(--accent)]" />
+          </span>
+          <span className="font-display font-extrabold text-lg tracking-[0.18em] text-gradient">SWATEK</span>
         </Link>
 
-        {/* Desktop links */}
-        <ul className="hidden md:flex items-center gap-6 text-sm font-medium" role="list">
+        <ul className="hidden md:flex items-center gap-7 text-[13px] font-medium tracking-wide" role="list">
           {navLinks.map((link, i) => {
             const active = pathname.startsWith(link.href)
             return (
               <motion.li
                 key={link.href}
-                initial={reducedMotion ? false : { opacity: 0, y: -10 }}
+                initial={false}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.08 * i + 0.2, duration: 0.4 }}
+                transition={{ delay: 0.08 * i + 0.2, duration: 0.45 }}
               >
                 <Link
                   href={link.href}
@@ -74,14 +69,13 @@ export function Navbar() {
                   )}
                 >
                   {link.label}
-                  {/* Animated underline */}
                   {mounted && (
                     <motion.span
-                      className="absolute -bottom-0.5 left-0 right-0 h-px bg-[--accent] rounded-full"
+                      className="absolute -bottom-0.5 left-0 right-0 h-px bg-gradient-to-r from-[--accent] to-[--accent-warm] rounded-full"
                       initial={{ scaleX: 0 }}
                       animate={{ scaleX: active ? 1 : 0 }}
                       whileHover={{ scaleX: 1 }}
-                      transition={{ duration: 0.25, ease: 'easeOut' }}
+                      transition={{ duration: 0.28, ease: 'easeOut' }}
                       style={{ originX: 'left' }}
                     />
                   )}
@@ -91,19 +85,20 @@ export function Navbar() {
           })}
         </ul>
 
-        {/* CTA + mobile toggle */}
         <div className="flex items-center gap-3">
           <motion.div
-            initial={reducedMotion ? false : { opacity: 0, scale: 0.85 }}
+            initial={false}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.6, duration: 0.4 }}
+            transition={{ delay: mounted && !reducedMotion ? 0.35 : 0, duration: 0.4 }}
           >
-            <Link
-              href="/contact"
-              className="hidden md:inline-flex items-center justify-center gap-2 px-4 py-2 h-9 rounded-lg text-sm font-medium bg-[--accent] text-[--background] hover:bg-[--accent-dim] transition-colors"
-            >
-              Get in Touch
-            </Link>
+            <MagneticButton>
+              <Link
+                href="/contact"
+                className="btn-cinematic btn-primary hidden md:inline-flex items-center justify-center gap-2 px-5 py-2 h-9 rounded-full text-xs font-semibold tracking-wide transition-colors"
+              >
+                Get in Touch
+              </Link>
+            </MagneticButton>
           </motion.div>
 
           <button
@@ -128,7 +123,6 @@ export function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile menu */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -138,7 +132,7 @@ export function Navbar() {
             transition={{ duration: 0.3, ease: 'easeInOut' }}
             className="md:hidden glass border-t border-[--border] overflow-hidden"
           >
-            <ul className="flex flex-col px-6 py-4 gap-1 text-sm font-medium" role="list">
+            <ul className="flex flex-col px-6 py-5 gap-1 text-sm font-medium" role="list">
               {navLinks.map((link, i) => (
                 <motion.li
                   key={link.href}
@@ -150,7 +144,7 @@ export function Navbar() {
                     href={link.href}
                     onClick={() => setMenuOpen(false)}
                     className={cn(
-                      'block py-2.5 transition-colors hover:text-[--accent]',
+                      'block py-2.5 tracking-wide transition-colors hover:text-[--accent]',
                       pathname.startsWith(link.href) ? 'text-[--accent]' : 'text-[--text-secondary]'
                     )}
                   >

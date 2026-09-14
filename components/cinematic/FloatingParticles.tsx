@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useReducedMotion } from 'framer-motion'
 
 interface Particle {
@@ -18,9 +18,12 @@ export function FloatingParticles({ count = 55 }: { count?: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const reducedMotion = useReducedMotion()
   const animFrameRef = useRef<number>(0)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
-    if (reducedMotion) return
+    if (!mounted || reducedMotion) return
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
@@ -60,7 +63,7 @@ export function FloatingParticles({ count = 55 }: { count?: number }) {
           if (dist < maxDist) {
             const alpha = (1 - dist / maxDist) * 0.35
             ctx.beginPath()
-            ctx.strokeStyle = `rgba(0, 212, 255, ${alpha})`
+            ctx.strokeStyle = `rgba(94, 234, 212, ${alpha})`
             ctx.lineWidth = 0.8
             ctx.moveTo(particles[i].x, particles[i].y)
             ctx.lineTo(particles[j].x, particles[j].y)
@@ -87,16 +90,14 @@ export function FloatingParticles({ count = 55 }: { count?: number }) {
         const pulse = Math.sin(tick * p.pulseSpeed + p.pulseOffset) * 0.3 + 0.7
         const alpha = p.opacity * pulse
 
-        // Solid bright core
         ctx.beginPath()
-        ctx.fillStyle = `rgba(0, 212, 255, ${alpha})`
+        ctx.fillStyle = `rgba(94, 234, 212, ${alpha})`
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2)
         ctx.fill()
 
-        // Soft glow halo
         const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius * 4)
-        grad.addColorStop(0, `rgba(0, 212, 255, ${alpha * 0.4})`)
-        grad.addColorStop(1, `rgba(123, 92, 250, 0)`)
+        grad.addColorStop(0, `rgba(240, 180, 90, ${alpha * 0.35})`)
+        grad.addColorStop(1, `rgba(94, 234, 212, 0)`)
         ctx.beginPath()
         ctx.fillStyle = grad
         ctx.arc(p.x, p.y, p.radius * 4, 0, Math.PI * 2)
@@ -118,9 +119,11 @@ export function FloatingParticles({ count = 55 }: { count?: number }) {
       cancelAnimationFrame(animFrameRef.current)
       ro.disconnect()
     }
-  }, [reducedMotion, count])
+  }, [mounted, reducedMotion, count])
 
-  if (reducedMotion) return null
+  // Always render the same node on SSR + first paint to avoid hydration mismatch.
+  // Hide after mount when the user prefers reduced motion.
+  if (mounted && reducedMotion) return null
 
   return (
     <canvas

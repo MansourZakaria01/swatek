@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
 import { ExternalLink, Trash2 } from 'lucide-react'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
+import { AdminTableSkeleton } from '@/components/admin/AdminTableSkeleton'
 
 interface Doc { id: string; titleEn: string; category: string; language: string; fileType: string; fileUrl: string }
 
@@ -32,8 +33,12 @@ export default function AdminKnowledgePage() {
 
   return (
     <div className="p-8 max-w-5xl">
-      <h1 className="text-2xl font-bold mb-8">Knowledge Library</h1>
-      {loading ? <p className="text-[--text-muted]">Loading...</p> : docs.length === 0 ? (
+      <AdminPageHeader
+        kicker="Resources"
+        title="Knowledge Library"
+        description="White papers, specs, and downloadable documents."
+      />
+      {loading ? <AdminTableSkeleton /> : docs.length === 0 ? (
         <p className="text-[--text-muted] py-12 text-center">No documents yet.</p>
       ) : (
         <div className="glass rounded-xl border border-[--border] overflow-hidden">

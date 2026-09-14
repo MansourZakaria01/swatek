@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { MapPin, Trash2 } from 'lucide-react'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
+import { AdminTableSkeleton } from '@/components/admin/AdminTableSkeleton'
 
 interface CaseStudy {
   id: string; slug: string; titleEn: string; sector: string; geography: string; published: boolean
@@ -30,10 +32,12 @@ export default function AdminCaseStudiesPage() {
 
   return (
     <div className="p-8 max-w-5xl">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold">Case Studies</h1>
-      </div>
-      {loading ? <p className="text-[--text-muted]">Loading...</p> : items.length === 0 ? (
+      <AdminPageHeader
+        kicker="Proof"
+        title="Case Studies"
+        description="Published deployments and measurable impact stories."
+      />
+      {loading ? <AdminTableSkeleton /> : items.length === 0 ? (
         <p className="text-[--text-muted] py-12 text-center">No case studies yet.</p>
       ) : (
         <div className="glass rounded-xl border border-[--border] overflow-hidden">

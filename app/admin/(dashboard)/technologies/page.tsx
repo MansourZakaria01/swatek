@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Plus, Pencil, Trash2 } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
+import { AdminTableSkeleton } from '@/components/admin/AdminTableSkeleton'
 
 interface Technology {
   id: string; slug: string; nameEn: string; domain: { nameEn: string };
@@ -34,16 +36,20 @@ export default function AdminTechnologiesPage() {
 
   return (
     <div className="p-8 max-w-5xl">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold">Technologies</h1>
-        <Link href="/admin/technologies/new"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[--accent] text-[--background] text-sm font-semibold hover:bg-[--accent-dim] transition-colors">
-          <Plus size={15} /> Add Technology
-        </Link>
-      </div>
+      <AdminPageHeader
+        kicker="Catalog"
+        title="Technologies"
+        description="Manage the public technology portfolio and featured listings."
+        actions={
+          <Link href="/admin/technologies/new"
+            className="btn-cinematic btn-primary inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold">
+            <Plus size={15} /> Add Technology
+          </Link>
+        }
+      />
 
       {loading ? (
-        <p className="text-[--text-muted]">Loading...</p>
+        <AdminTableSkeleton />
       ) : techs.length === 0 ? (
         <p className="text-[--text-muted] py-12 text-center">No technologies yet.</p>
       ) : (

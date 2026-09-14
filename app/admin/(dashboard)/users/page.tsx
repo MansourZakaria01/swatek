@@ -3,6 +3,8 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Plus, Eye, EyeOff, Copy, Check, RefreshCw, Shield, Pencil, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
+import { AdminTableSkeleton } from '@/components/admin/AdminTableSkeleton'
 
 interface User { id: string; name: string; email: string; role: string; createdAt: string }
 
@@ -47,7 +49,7 @@ function generatePassword(): string {
   return pw.split('').sort(() => Math.random() - 0.5).join('')
 }
 
-const inputClass = 'w-full bg-[--surface-2] border border-[--border] rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[--accent] transition-colors'
+const inputClass = 'cine-input'
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([])
@@ -104,19 +106,19 @@ export default function AdminUsersPage() {
 
   return (
     <div className="p-8 max-w-4xl">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold">Users</h1>
-          <p className="text-sm text-[--text-muted] mt-1">Manage who has access to the admin panel.</p>
-        </div>
-        <button
-          onClick={() => { setShowForm((s) => !s); setCreatedUser(null); resetForm() }}
-          className="inline-flex items-center gap-2 px-4 py-2 h-9 rounded-lg bg-[--accent] text-[--background] text-sm font-semibold hover:bg-[--accent-dim] transition-colors"
-        >
-          <Plus size={15} /> Add User
-        </button>
-      </div>
+      <AdminPageHeader
+        kicker="Access"
+        title="Users"
+        description="Manage who has access to the admin panel."
+        actions={
+          <button
+            onClick={() => { setShowForm((s) => !s); setCreatedUser(null); resetForm() }}
+            className="btn-cinematic btn-primary inline-flex items-center gap-2 px-4 py-2 h-9 rounded-full text-sm font-semibold"
+          >
+            <Plus size={15} /> Add User
+          </button>
+        }
+      />
 
       {/* Success banner — copy credentials */}
       {createdUser && (
@@ -266,7 +268,7 @@ export default function AdminUsersPage() {
           <div className="flex gap-3">
             <button
               type="submit" disabled={saving || strength.score < 2}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2 h-9 rounded-lg bg-[--accent] text-[--background] text-sm font-semibold hover:bg-[--accent-dim] disabled:opacity-40 transition-colors"
+              className="btn-cinematic btn-primary inline-flex items-center justify-center gap-2 px-5 py-2 h-9 rounded-full text-sm font-semibold disabled:opacity-40"
             >
               {saving ? 'Creating...' : 'Create User'}
             </button>
@@ -282,7 +284,7 @@ export default function AdminUsersPage() {
 
       {/* Users table */}
       {loading ? (
-        <p className="text-[--text-muted]">Loading...</p>
+        <AdminTableSkeleton />
       ) : users.length === 0 ? (
         <p className="text-[--text-muted] py-12 text-center">No users yet.</p>
       ) : (

@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Zap } from 'lucide-react'
 
 export default function AdminLoginPage() {
   const router = useRouter()
@@ -33,31 +32,37 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[--background] px-4">
-      <div className="glass rounded-2xl p-8 w-full max-w-sm border border-[--border]">
-        <div className="flex items-center gap-2 font-bold text-xl mb-8">
-          <Zap size={22} className="text-[--accent]" />
-          <span className="text-gradient">SWATEK Admin</span>
+    <div className="relative min-h-screen flex items-center justify-center bg-[--background] px-4 overflow-hidden">
+      <div className="film-grain" aria-hidden="true" />
+      <div className="vignette" aria-hidden="true" />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, rgba(94,234,212,0.08), transparent 60%)' }} />
+      <div className="cine-frame relative z-10 rounded-2xl p-8 w-full max-w-sm">
+        <div className="flex items-center gap-3 font-display font-bold text-xl mb-8">
+          <span className="relative flex h-8 w-8 items-center justify-center">
+            <span className="absolute inset-0 rounded-sm border border-[--accent]/50 rotate-45" />
+            <span className="h-1.5 w-1.5 rounded-full bg-[--accent]" />
+          </span>
+          <span className="text-gradient tracking-[0.14em]">SWATEK Admin</span>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-[--text-secondary] mb-1.5" htmlFor="email">Email</label>
+            <label className="block text-xs font-medium tracking-widest uppercase text-[--text-muted] mb-2" htmlFor="email">Email</label>
             <input
               id="email" type="email" required
               value={form.email}
               onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-              className="w-full bg-[--surface-2] border border-[--border] rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[--accent] transition-colors"
+              className="cine-input"
               placeholder="admin@swatek.tech"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[--text-secondary] mb-1.5" htmlFor="password">Password</label>
+            <label className="block text-xs font-medium tracking-widest uppercase text-[--text-muted] mb-2" htmlFor="password">Password</label>
             <input
               id="password" type="password" required
               value={form.password}
               onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
-              className="w-full bg-[--surface-2] border border-[--border] rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[--accent] transition-colors"
+              className="cine-input"
               placeholder="••••••••"
             />
           </div>
@@ -66,7 +71,7 @@ export default function AdminLoginPage() {
 
           <button
             type="submit" disabled={loading}
-            className="w-full py-2.5 rounded-lg bg-[--accent] text-[--background] font-semibold hover:bg-[--accent-dim] transition-colors disabled:opacity-50"
+            className="btn-cinematic btn-primary w-full py-3 rounded-full font-semibold transition-colors disabled:opacity-50"
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>

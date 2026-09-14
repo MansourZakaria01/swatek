@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Send, CheckCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { MagneticButton } from '@/components/cinematic/MagneticButton'
 
 const INQUIRY_TYPES = [
   { value: 'technology_partnership', label: 'Technology Partnership' },
@@ -55,10 +56,10 @@ export function ContactForm() {
 
   if (success) {
     return (
-      <div className="glass rounded-2xl p-10 text-center border border-[--success]">
+      <div className="cine-frame rounded-2xl p-12 text-center">
         <CheckCircle size={48} className="mx-auto text-[--success] mb-4" />
-        <h2 className="text-2xl font-bold mb-2">Message Received</h2>
-        <p className="text-[--text-secondary]">Thank you for reaching out. We'll get back to you within 48 hours.</p>
+        <h2 className="font-display text-2xl font-bold mb-2">Message Received</h2>
+        <p className="text-[--text-secondary]">Thank you for reaching out. We&apos;ll get back to you within 48 hours.</p>
       </div>
     )
   }
@@ -72,38 +73,38 @@ export function ContactForm() {
   })
 
   const inputClass = (name: string) => cn(
-    'w-full bg-[--surface-2] border rounded-lg px-4 py-3 text-sm outline-none transition-colors focus:border-[--accent]',
-    errors[name] ? 'border-[--danger]' : 'border-[--border]'
+    'cine-input',
+    errors[name] && 'border-[--danger]'
   )
 
   return (
-    <form onSubmit={handleSubmit} className="glass rounded-2xl p-8 md:p-10 space-y-5" noValidate>
+    <form onSubmit={handleSubmit} className="cine-frame rounded-2xl p-8 md:p-10 space-y-5" noValidate>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
-          <label className="block text-sm font-medium text-[--text-secondary] mb-1.5" htmlFor="fullName">Full Name *</label>
+          <label className="block text-xs font-medium tracking-widest uppercase text-[--text-muted] mb-2" htmlFor="fullName">Full Name *</label>
           <input id="fullName" type="text" className={inputClass('fullName')} placeholder="Your name" {...field('fullName')} />
           {errors.fullName && <p className="text-xs text-[--danger] mt-1">{errors.fullName}</p>}
         </div>
         <div>
-          <label className="block text-sm font-medium text-[--text-secondary] mb-1.5" htmlFor="organization">Organization</label>
+          <label className="block text-xs font-medium tracking-widest uppercase text-[--text-muted] mb-2" htmlFor="organization">Organization</label>
           <input id="organization" type="text" className={inputClass('organization')} placeholder="Company / institution" {...field('organization')} />
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
-          <label className="block text-sm font-medium text-[--text-secondary] mb-1.5" htmlFor="email">Email *</label>
+          <label className="block text-xs font-medium tracking-widest uppercase text-[--text-muted] mb-2" htmlFor="email">Email *</label>
           <input id="email" type="email" className={inputClass('email')} placeholder="you@example.com" {...field('email')} />
           {errors.email && <p className="text-xs text-[--danger] mt-1">{errors.email}</p>}
         </div>
         <div>
-          <label className="block text-sm font-medium text-[--text-secondary] mb-1.5" htmlFor="phone">Phone</label>
+          <label className="block text-xs font-medium tracking-widest uppercase text-[--text-muted] mb-2" htmlFor="phone">Phone</label>
           <input id="phone" type="tel" className={inputClass('phone')} placeholder="+213 ..." {...field('phone')} />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[--text-secondary] mb-1.5" htmlFor="inquiryType">Inquiry Type *</label>
+        <label className="block text-xs font-medium tracking-widest uppercase text-[--text-muted] mb-2" htmlFor="inquiryType">Inquiry Type *</label>
         <select id="inquiryType" className={inputClass('inquiryType')} {...field('inquiryType')}>
           <option value="">Select a type...</option>
           {INQUIRY_TYPES.map((t) => (
@@ -114,7 +115,7 @@ export function ContactForm() {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[--text-secondary] mb-1.5" htmlFor="message">Message *</label>
+        <label className="block text-xs font-medium tracking-widest uppercase text-[--text-muted] mb-2" htmlFor="message">Message *</label>
         <textarea
           id="message"
           rows={5}
@@ -127,13 +128,15 @@ export function ContactForm() {
 
       {serverError && <p className="text-sm text-[--danger] text-center">{serverError}</p>}
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-[--accent] text-[--background] font-semibold hover:bg-[--accent-dim] transition-colors disabled:opacity-50"
-      >
-        {submitting ? 'Sending...' : (<><Send size={16} /> Send Message</>)}
-      </button>
+      <MagneticButton className="w-full">
+        <button
+          type="submit"
+          disabled={submitting}
+          className="btn-cinematic btn-primary w-full flex items-center justify-center gap-2 py-3.5 rounded-full font-semibold transition-colors disabled:opacity-50"
+        >
+          {submitting ? 'Sending...' : (<><Send size={16} /> Send Message</>)}
+        </button>
+      </MagneticButton>
     </form>
   )
 }

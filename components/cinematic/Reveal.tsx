@@ -1,7 +1,7 @@
 'use client'
 
-import { motion, useReducedMotion, Variants } from 'framer-motion'
-import { ReactNode, useEffect, useState } from 'react'
+import { motion, useReducedMotion, useInView, Variants } from 'framer-motion'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 
 type Direction = 'up' | 'down' | 'left' | 'right' | 'none'
 
@@ -31,21 +31,30 @@ export function Reveal({
   once = true,
 }: RevealProps) {
   const reducedMotion = useReducedMotion()
+  const ref = useRef<HTMLDivElement>(null)
   const [mounted, setMounted] = useState(false)
+  const inView = useInView(ref, { once, margin: '0px 0px -40px 0px', amount: 0.15 })
 
   useEffect(() => { setMounted(true) }, [])
 
-  // Before hydration: render plain div, no animation styles
+  // Plain div on SSR + hydration — Framer variant styles (opacity:"1" + transform)
+  // serialize differently on server vs client and cause attribute mismatches.
   if (!mounted) {
-    return <div className={className}>{children}</div>
+    return (
+      <div ref={ref} className={className}>
+        {children}
+      </div>
+    )
   }
+
+  const visible = !!reducedMotion || inView
 
   return (
     <motion.div
+      ref={ref}
       className={className}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once, margin: '-60px' }}
+      initial={visible ? false : 'hidden'}
+      animate={visible ? 'visible' : 'hidden'}
       variants={reducedMotion ? variants.none : variants[direction]}
       transition={{
         duration: reducedMotion ? 0.01 : duration,

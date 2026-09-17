@@ -7,12 +7,7 @@ import { SplitHeading } from '@/components/cinematic/SplitHeading'
 import { CinematicDivider } from '@/components/cinematic/CinematicDivider'
 import { Marquee } from '@/components/cinematic/Marquee'
 import { ExternalLink } from 'lucide-react'
-import { fetchPublicJson } from '@/lib/public-fetch'
-
-async function getPartners() {
-  const data = await fetchPublicJson<{ partners: unknown[] }>('/api/partners')
-  return data?.partners ?? []
-}
+import { getPartners } from '@/lib/queries'
 
 export const metadata = { title: 'Partners' }
 
@@ -69,7 +64,7 @@ export default async function PartnersPage() {
               </div>
             </Reveal>
             <div className="grid md:grid-cols-2 gap-5 mb-16">
-              {featured.map((p: { id: string; name: string; descEn: string; type: string; website?: string }, i: number) => (
+              {featured.map((p, i: number) => (
                 <Reveal key={p.id} direction="up" delay={i * 0.08}>
                   <GlowCard className="p-8 h-full card-hover" glowColor="rgba(240,180,90,0.16)">
                     <div className="flex items-start justify-between gap-3 mb-4">
@@ -110,7 +105,7 @@ export default async function PartnersPage() {
               </div>
             </Reveal>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {others.map((p: { id: string; name: string; descEn: string; type: string; website?: string }, i: number) => (
+              {others.map((p, i: number) => (
                 <Reveal key={p.id} direction="up" delay={Math.min(i * 0.06, 0.3)}>
                   <GlowCard className="p-6 h-full card-hover">
                     <span className={`kicker block mb-3 ${TYPE_COLORS[p.type] ?? ''}`}>

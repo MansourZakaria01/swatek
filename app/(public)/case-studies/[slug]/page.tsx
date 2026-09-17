@@ -5,16 +5,11 @@ import { AnimatedCounter } from '@/components/cinematic/AnimatedCounter'
 import { PageHero } from '@/components/cinematic/PageHero'
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight, MapPin } from 'lucide-react'
-import { fetchPublicJson } from '@/lib/public-fetch'
-
-async function getCaseStudy(slug: string) {
-  const data = await fetchPublicJson<{ caseStudy: unknown }>(`/api/case-studies/${slug}`)
-  return data?.caseStudy ?? null
-}
+import { getCaseStudyBySlug } from '@/lib/queries'
 
 export default async function CaseStudyDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const cs = await getCaseStudy(slug)
+  const cs = await getCaseStudyBySlug(slug)
   if (!cs) notFound()
 
   const metrics = [
@@ -23,7 +18,7 @@ export default async function CaseStudyDetailPage({ params }: { params: Promise<
     { label: 'Productivity Gain', value: cs.productivityGainPct, suffix: '%', color: 'var(--warning)' },
     { label: 'Op. Cost Reduction', value: cs.opCostReductionPct, suffix: '%', color: 'var(--accent-violet)' },
     { label: 'Capacity', value: cs.capacityMW, suffix: ' MW', color: 'var(--accent)' },
-  ].filter((m) => m.value != null)
+  ].filter((m): m is typeof m & { value: number } => m.value != null)
 
   return (
     <>

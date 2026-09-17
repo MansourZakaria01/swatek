@@ -5,16 +5,11 @@ import { PageHero } from '@/components/cinematic/PageHero'
 import { GlowCard } from '@/components/cinematic/GlowCard'
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
-import { fetchPublicJson } from '@/lib/public-fetch'
-
-async function getSolution(slug: string) {
-  const data = await fetchPublicJson<{ solution: unknown }>(`/api/solutions/${slug}`)
-  return data?.solution ?? null
-}
+import { getSolutionBySlug } from '@/lib/queries'
 
 export default async function SolutionDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const solution = await getSolution(slug)
+  const solution = await getSolutionBySlug(slug)
   if (!solution) notFound()
 
   return (

@@ -5,23 +5,18 @@ import { AnimatedCounter } from '@/components/cinematic/AnimatedCounter'
 import { PageHero } from '@/components/cinematic/PageHero'
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
-import { fetchPublicJson } from '@/lib/public-fetch'
-
-async function getTechnology(slug: string) {
-  const data = await fetchPublicJson<{ technology: unknown }>(`/api/technologies/${slug}`)
-  return data?.technology ?? null
-}
+import { getTechnologyBySlug } from '@/lib/queries'
 
 export default async function TechnologyDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const tech = await getTechnology(slug)
+  const tech = await getTechnologyBySlug(slug)
   if (!tech) notFound()
 
   const metrics = [
     { label: 'Energy Savings', value: tech.energySavingsPct, suffix: '%', color: 'var(--accent)' },
     { label: 'Carbon Reduction', value: tech.carbonReductionPct, suffix: '%', color: 'var(--success)' },
     { label: 'ROI Period', value: tech.roiPeriodMonths, suffix: ' mo', color: 'var(--warning)' },
-  ].filter((m) => m.value != null)
+  ].filter((m): m is typeof m & { value: number } => m.value != null)
 
   return (
     <>

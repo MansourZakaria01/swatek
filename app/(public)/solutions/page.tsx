@@ -7,12 +7,7 @@ import { SplitHeading } from '@/components/cinematic/SplitHeading'
 import { MagneticButton } from '@/components/cinematic/MagneticButton'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import { fetchPublicJson } from '@/lib/public-fetch'
-
-async function getSolutions() {
-  const data = await fetchPublicJson<{ solutions: unknown[] }>('/api/solutions')
-  return data?.solutions ?? []
-}
+import { getSolutions } from '@/lib/queries'
 
 export const metadata = { title: 'Solutions' }
 

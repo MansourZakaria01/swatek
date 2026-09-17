@@ -5,21 +5,7 @@ import { PageHero } from '@/components/cinematic/PageHero'
 import { MagneticButton } from '@/components/cinematic/MagneticButton'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import { fetchPublicJson } from '@/lib/public-fetch'
-
-async function getTechnologies(domain?: string, tag?: string) {
-  const params = new URLSearchParams()
-  if (domain) params.set('domain', domain)
-  if (tag) params.set('tag', tag)
-  const qs = params.toString()
-  const data = await fetchPublicJson<{ technologies: unknown[] }>(`/api/technologies${qs ? `?${qs}` : ''}`)
-  return data?.technologies ?? []
-}
-
-async function getDomains() {
-  const data = await fetchPublicJson<{ domains: unknown[] }>('/api/domains')
-  return data?.domains ?? []
-}
+import { getTechnologies, getDomains } from '@/lib/queries'
 
 export default async function TechnologiesPage({
   searchParams,

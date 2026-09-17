@@ -14,16 +14,21 @@ import { AmbientBackdrop } from '@/components/cinematic/AmbientBackdrop'
 import { ParallaxSection } from '@/components/cinematic/ParallaxSection'
 import Link from 'next/link'
 import { ArrowRight, Brain, Factory, Recycle, Zap, Sprout, Building2 } from 'lucide-react'
-import { fetchPublicJson } from '@/lib/public-fetch'
+import { prisma } from '@/lib/prisma'
 
 async function getMetrics() {
-  const data = await fetchPublicJson<{ metrics: unknown[] }>('/api/metrics')
-  return data?.metrics ?? []
+  return prisma.impactMetric.findMany({
+    where: { technologyId: null, caseStudyId: null },
+    orderBy: { createdAt: 'asc' },
+  })
 }
 
 async function getFeaturedTechnologies() {
-  const data = await fetchPublicJson<{ technologies: unknown[] }>('/api/technologies?featured=true')
-  return data?.technologies ?? []
+  return prisma.technology.findMany({
+    where: { published: true, featured: true },
+    include: { domain: true },
+    orderBy: { createdAt: 'desc' },
+  })
 }
 
 const domainCards = [

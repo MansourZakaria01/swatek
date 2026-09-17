@@ -6,16 +6,7 @@ import { AnimatedCounter } from '@/components/cinematic/AnimatedCounter'
 import { ParallaxSection } from '@/components/cinematic/ParallaxSection'
 import Link from 'next/link'
 import { ArrowRight, MapPin, Tag } from 'lucide-react'
-import { fetchPublicJson } from '@/lib/public-fetch'
-
-async function getCaseStudies(sector?: string, geography?: string) {
-  const params = new URLSearchParams()
-  if (sector) params.set('sector', sector)
-  if (geography) params.set('geography', geography)
-  const qs = params.toString()
-  const data = await fetchPublicJson<{ caseStudies: unknown[] }>(`/api/case-studies${qs ? `?${qs}` : ''}`)
-  return data?.caseStudies ?? []
-}
+import { getCaseStudies } from '@/lib/queries'
 
 export const metadata = { title: 'Case Studies' }
 

@@ -7,16 +7,7 @@ import { SectionLabel } from '@/components/cinematic/SectionLabel'
 import { SplitHeading } from '@/components/cinematic/SplitHeading'
 import Link from 'next/link'
 import { ExternalLink, FileText, FileSpreadsheet, File } from 'lucide-react'
-import { fetchPublicJson } from '@/lib/public-fetch'
-
-async function getDocuments(category?: string, language?: string) {
-  const params = new URLSearchParams()
-  if (category) params.set('category', category)
-  if (language) params.set('language', language)
-  const qs = params.toString()
-  const data = await fetchPublicJson<{ documents: unknown[] }>(`/api/knowledge${qs ? `?${qs}` : ''}`)
-  return data?.documents ?? []
-}
+import { getDocuments } from '@/lib/queries'
 
 export const metadata = { title: 'Knowledge Library' }
 
